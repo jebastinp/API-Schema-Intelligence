@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-import logoFull from "@/logo/ChatGPT Image Jul 27, 2026 at 01_19_26 AM.png";
+import logoFull from "@/logo/logo_custom.png";
 
 export function BrandHeader() {
   return (

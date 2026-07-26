@@ -24,7 +24,7 @@ import { apiFetch } from "@/lib/api";
 import { hasPublicSupabaseEnv } from "@/lib/env";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { APIConnection, NotificationRecord, ScanDashboardJob } from "@/lib/types";
-import logoFull from "@/logo/ChatGPT Image Jul 27, 2026 at 01_19_26 AM.png";
+import logoFull from "@/logo/logo_custom.png";
 
 type NavItem = {
   label: string;
