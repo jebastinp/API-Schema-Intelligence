@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { Route } from "next";
+import type { MouseEvent, Route } from "next";
 import {
   Bell,
   Database,
@@ -72,7 +72,11 @@ const navigationSections: Array<{ heading: string; items: NavItem[] }> = [
   },
 ];
 
-export function DashboardNav() {
+export function DashboardNav({
+  onNavigate,
+}: {
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
   const [connections, setConnections] = useState<APIConnection[]>([]);
   const [jobs, setJobs] = useState<ScanDashboardJob[]>([]);
@@ -129,7 +133,7 @@ export function DashboardNav() {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-full min-h-0 flex-col bg-white">
       <div className="flex h-[92px] shrink-0 items-center justify-start border-b border-[#E5E7EB] bg-white px-5">
         <div className="h-[68px] w-[236px] shrink-0 overflow-hidden">
           <img
@@ -159,6 +163,7 @@ export function DashboardNav() {
                       <Link
                         key={label}
                         href={href}
+                        onClick={() => onNavigate?.()}
                         className={`flex items-center justify-between rounded-[12px] px-3 py-2 text-[13px] font-medium transition ${
                           active
                             ? "border border-[#DBEAFE] bg-[#EFF6FF] text-[#2563EB] shadow-[0_10px_20px_-18px_rgba(37,99,235,0.55)]"
@@ -185,7 +190,11 @@ export function DashboardNav() {
         <div className="shrink-0 border-t border-[#F1F5F9] pt-3">
           <button
             type="button"
-            onClick={() => void handleSignOut()}
+            onClick={(event: MouseEvent<HTMLButtonElement>) => {
+              event.preventDefault();
+              onNavigate?.();
+              void handleSignOut();
+            }}
             disabled={signingOut}
             className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2 text-[13px] font-medium text-[#334155] transition hover:border-[#E5E7EB] hover:bg-[#F8FAFC] hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-60"
           >

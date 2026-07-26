@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Plus, Search } from "lucide-react";
+import { Bell, Menu, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -93,6 +93,7 @@ export function DashboardShell({
   const initials = useMemo(() => initialsFromEmail(email), [email]);
   const name = useMemo(() => displayNameFromEmail(email), [email]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isDashboard = pathname === "/dashboard";
 
   useEffect(() => {
@@ -108,29 +109,54 @@ export function DashboardShell({
     void loadNotifications();
   }, []);
 
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <aside className="fixed inset-y-0 left-0 z-30 w-[280px] border-r border-[#E5E7EB] bg-[#FFFFFF]">
-        <DashboardNav />
+      {mobileNavOpen ? (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setMobileNavOpen(false)}
+          className="fixed inset-0 z-40 bg-[#0F172A]/35 lg:hidden"
+        />
+      ) : null}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-[280px] border-r border-[#E5E7EB] bg-[#FFFFFF] transition-transform duration-200 lg:z-30 ${
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <DashboardNav onNavigate={() => setMobileNavOpen(false)} />
       </aside>
 
-      <div className="ml-[280px] min-h-screen">
+      <div className="min-h-screen lg:ml-[280px]">
         <div className="min-h-screen">
-          <header className="sticky top-0 z-20 border-b border-[#E5E7EB] bg-[#F8FAFC]/95 px-6 backdrop-blur-sm">
+          <header className="sticky top-0 z-20 border-b border-[#E5E7EB] bg-[#F8FAFC]/95 px-4 backdrop-blur-sm sm:px-5 lg:px-6">
             <RouteProgress />
-            <div className="grid h-[72px] grid-cols-[minmax(240px,1fr)_420px_auto] items-center gap-6">
-              <div className="min-w-0">
+            <div className="flex min-h-[72px] flex-col gap-3 py-3 lg:grid lg:h-[72px] lg:grid-cols-[minmax(220px,1fr)_minmax(280px,420px)_auto] lg:items-center lg:gap-6 lg:py-0">
+              <div className="flex min-w-0 items-start gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMobileNavOpen((current) => !current)}
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-[#E5E7EB] bg-white text-[#334155] lg:hidden"
+                  aria-label={mobileNavOpen ? "Close navigation" : "Open navigation"}
+                >
+                  {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </button>
                 <h1
                   className={`truncate font-semibold tracking-[-0.04em] text-[#111827] ${
-                    isDashboard ? "text-[28px] leading-[1.05]" : "text-[24px] leading-[1.1]"
+                    isDashboard ? "text-[24px] leading-[1.05] sm:text-[28px]" : "text-[22px] leading-[1.1] sm:text-[24px]"
                   }`}
                 >
                   {meta.title}
                 </h1>
-                <p className="mt-1 truncate text-[13px] text-[#64748B]">{meta.subtitle}</p>
+                <p className="mt-1 truncate text-[12px] text-[#64748B] sm:text-[13px]">{meta.subtitle}</p>
               </div>
 
-              <div className="flex min-w-0 items-center justify-center">
+              <div className="flex min-w-0 items-center justify-center lg:justify-center">
                 <div className="relative w-full max-w-[420px]">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
                   <Input
@@ -140,7 +166,7 @@ export function DashboardShell({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
                 <Link
                   href="/notifications"
                   className="relative flex h-10 w-10 items-center justify-center rounded-[12px] border border-[#E5E7EB] bg-white text-[#64748B] transition hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#2563EB]"
@@ -166,7 +192,7 @@ export function DashboardShell({
 
                 <Link
                   href="/connections"
-                  className="inline-flex h-[44px] min-w-[182px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-[#2563EB] px-5 text-[13px] font-medium text-white shadow-[0_10px_20px_-12px_rgba(37,99,235,0.5)] transition hover:bg-[#1D4ED8]"
+                  className="inline-flex h-[44px] min-w-[160px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-[#2563EB] px-4 text-[13px] font-medium text-white shadow-[0_10px_20px_-12px_rgba(37,99,235,0.5)] transition hover:bg-[#1D4ED8] sm:min-w-[182px] sm:px-5"
                 >
                   <Plus className="h-4 w-4" />
                   Add API Connection
@@ -175,7 +201,11 @@ export function DashboardShell({
             </div>
           </header>
 
-          <main className={`min-h-[calc(100vh-72px)] bg-[#F8FAFC] px-6 py-6 ${isDashboard ? "overflow-visible" : "overflow-y-auto"}`}>
+          <main
+            className={`min-h-[calc(100vh-72px)] bg-[#F8FAFC] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6 ${
+              isDashboard ? "overflow-visible" : "overflow-y-auto"
+            }`}
+          >
             {children}
           </main>
         </div>
