@@ -3,6 +3,8 @@ FROM node:22-bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends python3 python3-pip python3-venv nginx gettext-base build-essential \
@@ -19,7 +21,9 @@ RUN pnpm install --frozen-lockfile --prefer-offline
 
 COPY . .
 
-RUN python3 -m pip install -e ./backend
+RUN python3 -m venv "${VIRTUAL_ENV}" \
+  && "${VIRTUAL_ENV}/bin/pip" install --upgrade pip \
+  && "${VIRTUAL_ENV}/bin/pip" install -e ./backend
 RUN pnpm --dir frontend build
 
 COPY docker/nginx.single.conf.template /etc/nginx/templates/default.conf.template

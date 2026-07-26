@@ -10,7 +10,7 @@ envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/con
 cd /app
 
 cd /app/backend
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port "${APP_PORT}" &
+"${VIRTUAL_ENV:-/opt/venv}/bin/python" -m uvicorn app.main:app --host 0.0.0.0 --port "${APP_PORT}" &
 BACKEND_PID=$!
 
 cd /app
