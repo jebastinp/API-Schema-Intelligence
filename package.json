@@ -4,6 +4,7 @@
   "packageManager": "pnpm@10.14.0",
   "scripts": {
     "dev": "./run.sh",
+    "start": "corepack pnpm --dir frontend start",
     "stop": "./stop.sh",
     "restart": "./restart.sh",
     "health": "./health.sh",
