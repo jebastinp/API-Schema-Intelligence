@@ -1,0 +1,16 @@
+{
+  "name": "schema-studio",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "dev": "./run.sh",
+    "stop": "./stop.sh",
+    "restart": "./restart.sh",
+    "health": "./health.sh",
+    "clean": "./clean.sh",
+    "lint": "corepack pnpm --dir frontend lint",
+    "typecheck": "corepack pnpm --dir frontend typecheck",
+    "build": "corepack pnpm --dir frontend build",
+    "format": "corepack pnpm --dir frontend exec prettier --write . && cd backend && .venv/bin/python -m ruff format ."
+  }
+}
