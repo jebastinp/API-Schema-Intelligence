@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity, Clock3, LoaderCircle, Play, Radio, Rows3, Workflow } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -44,7 +44,7 @@ export function ScannerControlCenter() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  async function loadState(connectionId?: string) {
+  const loadState = useCallback(async (connectionId?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -69,11 +69,11 @@ export function ScannerControlCenter() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedConnectionId]);
 
   useEffect(() => {
     void loadState();
-  }, []);
+  }, [loadState]);
 
   useEffect(() => {
     if (!selectedConnectionId) {

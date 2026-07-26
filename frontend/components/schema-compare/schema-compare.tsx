@@ -3,7 +3,6 @@
 import {
   ArrowRight,
   FileDiff,
-  Filter,
   GitCompareArrows,
   LoaderCircle,
   Minus,

@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { z } from "zod";
 
@@ -158,14 +158,14 @@ export function ConnectionManager() {
     defaultValues,
   });
 
-  async function loadConnections() {
+  const loadConnections = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
       const data = await apiFetch<APIConnection[]>("/connections");
       setConnections(data);
-    } catch (fetchError) {
+    } catch {
       setConnections([]);
       setSelectedConnectionId(null);
       form.reset(defaultValues);
@@ -175,11 +175,11 @@ export function ConnectionManager() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [form]);
 
   useEffect(() => {
     void loadConnections();
-  }, []);
+  }, [loadConnections]);
 
   useEffect(() => {
     if (!activeScanJob || !["queued", "running"].includes(activeScanJob.status)) {
@@ -215,7 +215,7 @@ export function ConnectionManager() {
           // Keep the existing history view if the refresh fails.
         });
     }
-  }, [activeScanJob, selectedConnectionId]);
+  }, [activeScanJob, loadConnections, selectedConnectionId]);
 
   useEffect(() => {
     if (!selectedConnectionId) {

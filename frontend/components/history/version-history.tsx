@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock3, GitCompareArrows, LoaderCircle, Radar, Rows3 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,7 @@ export function VersionHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadState(connectionId?: string) {
+  const loadState = useCallback(async (connectionId?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -49,17 +49,17 @@ export function VersionHistory() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedConnectionId]);
 
   useEffect(() => {
     void loadState();
-  }, []);
+  }, [loadState]);
 
   useEffect(() => {
     if (selectedConnectionId) {
       void loadState(selectedConnectionId);
     }
-  }, [selectedConnectionId]);
+  }, [loadState, selectedConnectionId]);
 
   const latestVersion = versions[0] ?? null;
   const previousVersion = versions[1] ?? null;
