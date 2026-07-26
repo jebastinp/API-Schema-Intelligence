@@ -43,7 +43,6 @@ COPY --from=frontend-builder /app/frontend/.next /app/frontend/.next
 COPY --from=frontend-builder /app/frontend/node_modules /app/frontend/node_modules
 COPY --from=frontend-builder /app/frontend/package.json /app/frontend/package.json
 COPY --from=frontend-builder /app/frontend/next.config.ts /app/frontend/next.config.ts
-COPY --from=frontend-builder /app/frontend/public /app/frontend/public
 
 EXPOSE 8080
 
