@@ -359,12 +359,14 @@ export function LiveDashboard() {
   }, []);
 
   useEffect(() => {
-    const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (!configuredApiBaseUrl) {
+    const resolvedApiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ??
+      (typeof window !== "undefined" ? window.location.origin : null);
+    if (!resolvedApiBaseUrl) {
       setSocketStatus("disconnected");
       return;
     }
-    const apiBaseUrl: string = configuredApiBaseUrl;
+    const apiBaseUrl: string = resolvedApiBaseUrl;
 
     let active = true;
 

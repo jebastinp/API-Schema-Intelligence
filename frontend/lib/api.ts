@@ -128,7 +128,10 @@ async function authHeaders(headers?: HeadersInit): Promise<Headers> {
 function apiUrl(path: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   if (!baseUrl) {
-    throw new Error("NEXT_PUBLIC_API_BASE_URL is not configured.");
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/api${path}`;
+    }
+    return `/api${path}`;
   }
   return `${baseUrl}/api${path}`;
 }
