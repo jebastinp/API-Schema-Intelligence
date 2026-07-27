@@ -165,13 +165,17 @@ export function ConnectionManager() {
     try {
       const data = await apiFetch<APIConnection[]>("/connections");
       setConnections(data);
-    } catch {
+    } catch (loadError) {
       setConnections([]);
       setSelectedConnectionId(null);
       form.reset(defaultValues);
-      setError(
-        "Unable to load saved API connections right now. You can still create a new connection below.",
-      );
+      if (loadError instanceof Error && loadError.message.trim()) {
+        setError(loadError.message);
+      } else {
+        setError(
+          "Unable to load saved API connections right now. You can still create a new connection below.",
+        );
+      }
     } finally {
       setLoading(false);
     }
