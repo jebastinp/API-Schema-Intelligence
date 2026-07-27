@@ -1,10 +1,8 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_current_user
 from app.db.session import get_db
 from app.repositories.api_connection import APIConnectionRepository
 from app.repositories.user import UserRepository
@@ -17,7 +15,6 @@ from app.schemas.api_connection import (
 )
 from app.schemas.auth import CurrentUser
 from app.services.api_connection_tester import test_api_connection
-from app.services.notification_service import create_notification
 from app.services.scheduled_scans import build_schedule_fields
 
 router = APIRouter()
@@ -103,27 +100,6 @@ async def delete_connection(
 @router.post("/test", response_model=APITestResponse)
 async def test_connection(
     payload: APITestRequest,
-    user: CurrentUser = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
 ) -> APITestResponse:
     result = await test_api_connection(payload)
-    if result.status_code in {401, 403}:
-        try:
-            user_id = await resolve_local_user_id(session, user)
-            await create_notification(
-                session,
-                user_id=user_id,
-                event_type="authentication_expired",
-                title="Authentication expired",
-                message=f"{payload.name} returned HTTP {result.status_code} during connection testing.",
-                level="error",
-                metadata={
-                    "connection_name": payload.name,
-                    "base_url": str(payload.base_url),
-                    "status_code": result.status_code,
-                },
-            )
-            await session.commit()
-        except (RuntimeError, SQLAlchemyError):
-            await session.rollback()
     return result
