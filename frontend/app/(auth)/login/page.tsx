@@ -1,10 +1,7 @@
 import { AuthShell } from "@/components/auth/auth-shell";
 import { LoginForm } from "@/components/auth/login-form";
-import { redirectIfAuthenticated } from "@/lib/auth";
 
-export default async function LoginPage() {
-  await redirectIfAuthenticated();
-
+export default function LoginPage() {
   return (
     <AuthShell
       title="Welcome back"

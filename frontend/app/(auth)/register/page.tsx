@@ -1,10 +1,7 @@
 import { AuthShell } from "@/components/auth/auth-shell";
 import { RegisterForm } from "@/components/auth/register-form";
-import { redirectIfAuthenticated } from "@/lib/auth";
 
-export default async function RegisterPage() {
-  await redirectIfAuthenticated();
-
+export default function RegisterPage() {
   return (
     <AuthShell
       title="Create your account"
