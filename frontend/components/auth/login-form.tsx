@@ -67,16 +67,7 @@ export function LoginForm() {
 
   return (
     <div className="w-full">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(180deg,#EEF6FF_0%,#E8F2FF_100%)] text-[#007AFF] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
-        <Lock className="h-6 w-6 fill-[#007AFF] stroke-white stroke-[1.8]" />
-      </div>
-
-      <div className="mt-5 text-center">
-        <h2 className="text-[28px] font-bold tracking-[-0.04em] text-[#0F172A] sm:text-[30px]">Welcome Back</h2>
-        <p className="mt-2 text-[15px] text-[#64748B]">Sign in to continue to Schema Studio.</p>
-      </div>
-
-      <form className="mt-7 space-y-5" onSubmit={onSubmit}>
+      <form className="space-y-5" onSubmit={onSubmit}>
         <AuthInputField
           label="Email address"
           type="email"

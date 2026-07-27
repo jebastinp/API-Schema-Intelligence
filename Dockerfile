@@ -41,6 +41,10 @@ RUN python -m venv "${VIRTUAL_ENV}" \
 COPY --from=frontend-builder /app/frontend/.next/standalone/ /app/frontend/
 COPY --from=frontend-builder /app/frontend/.next/static /app/frontend/.next/static
 
+RUN mkdir -p /app/frontend/frontend/.next \
+  && cp -R /app/frontend/.next/static /app/frontend/frontend/.next/static \
+  && cp -R /app/frontend/public /app/frontend/frontend/public
+
 EXPOSE 8080
 
 CMD ["/app/scripts/start-single-service.sh"]

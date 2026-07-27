@@ -19,7 +19,9 @@ if [ ! -f "${NEXT_SERVER_PATH}" ] && [ -f "/app/frontend/frontend/server.js" ]; 
   NEXT_SERVER_PATH="/app/frontend/frontend/server.js"
 fi
 
-HOSTNAME=0.0.0.0 PORT=3000 node "${NEXT_SERVER_PATH}" &
+NEXT_SERVER_DIR=$(dirname "${NEXT_SERVER_PATH}")
+cd "${NEXT_SERVER_DIR}"
+HOSTNAME=0.0.0.0 PORT=3000 node ./server.js &
 FRONTEND_PID=$!
 
 cleanup() {
