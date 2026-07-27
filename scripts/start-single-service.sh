@@ -14,7 +14,7 @@ cd /app/backend
 BACKEND_PID=$!
 
 cd /app
-node /app/frontend/node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port 3000 &
+HOSTNAME=0.0.0.0 PORT=3000 node /app/frontend/server.js &
 FRONTEND_PID=$!
 
 cleanup() {
