@@ -9,12 +9,16 @@ export async function getCurrentSession() {
     return null;
   }
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-  return session;
+    return session;
+  } catch {
+    return null;
+  }
 }
 
 export async function requireUser() {
