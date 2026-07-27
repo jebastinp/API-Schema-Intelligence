@@ -18,11 +18,12 @@ async def lifespan(_: FastAPI):
     logger = get_logger("app.lifecycle")
     verify_runtime_configuration()
     database_health = await check_database_health()
-    if database_health["status"] != "ok":
-        raise RuntimeError(f"Supabase health check failed: {database_health['detail']}")
     logger.info("Starting Schema Studio backend")
     logger.info("Runtime directories prepared at %s", settings.project_root)
-    logger.info("Supabase connectivity check passed.")
+    if database_health["status"] == "ok":
+        logger.info("Supabase connectivity check passed.")
+    else:
+        logger.warning("Supabase connectivity check failed at startup: %s", database_health["detail"])
     start_scheduler()
     yield
     await stop_scheduler()

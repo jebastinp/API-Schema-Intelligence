@@ -14,7 +14,12 @@ cd /app/backend
 BACKEND_PID=$!
 
 cd /app
-HOSTNAME=0.0.0.0 PORT=3000 node /app/frontend/server.js &
+NEXT_SERVER_PATH="/app/frontend/server.js"
+if [ ! -f "${NEXT_SERVER_PATH}" ] && [ -f "/app/frontend/frontend/server.js" ]; then
+  NEXT_SERVER_PATH="/app/frontend/frontend/server.js"
+fi
+
+HOSTNAME=0.0.0.0 PORT=3000 node "${NEXT_SERVER_PATH}" &
 FRONTEND_PID=$!
 
 cleanup() {
