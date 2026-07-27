@@ -146,14 +146,16 @@ export function DashboardShell({
                 >
                   {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
                 </button>
-                <h1
-                  className={`truncate font-semibold tracking-[-0.04em] text-[#111827] ${
-                    isDashboard ? "text-[24px] leading-[1.05] sm:text-[28px]" : "text-[22px] leading-[1.1] sm:text-[24px]"
-                  }`}
-                >
-                  {meta.title}
-                </h1>
-                <p className="mt-1 truncate text-[12px] text-[#64748B] sm:text-[13px]">{meta.subtitle}</p>
+                <div className="min-w-0">
+                  <h1
+                    className={`truncate font-semibold tracking-[-0.04em] text-[#111827] ${
+                      isDashboard ? "text-[24px] leading-[1.05] sm:text-[28px]" : "text-[22px] leading-[1.1] sm:text-[24px]"
+                    }`}
+                  >
+                    {meta.title}
+                  </h1>
+                  <p className="mt-1 truncate text-[12px] text-[#64748B] sm:text-[13px]">{meta.subtitle}</p>
+                </div>
               </div>
 
               <div className="flex min-w-0 items-center justify-center lg:justify-center">

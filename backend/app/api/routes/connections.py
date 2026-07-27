@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_user
@@ -24,7 +25,10 @@ router = APIRouter()
 
 async def resolve_local_user_id(session: AsyncSession, user: CurrentUser) -> uuid.UUID:
     repository = UserRepository(session)
-    local_user = await repository.get_by_supabase_user_id(user.supabase_user_id)
+    try:
+        local_user = await repository.get_by_supabase_user_id(user.supabase_user_id)
+    except SQLAlchemyError as exc:
+        raise RuntimeError("Supabase health check failed: database session is unavailable.") from exc
     if local_user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not provisioned.")
     return local_user.id
@@ -104,19 +108,22 @@ async def test_connection(
 ) -> APITestResponse:
     result = await test_api_connection(payload)
     if result.status_code in {401, 403}:
-        user_id = await resolve_local_user_id(session, user)
-        await create_notification(
-            session,
-            user_id=user_id,
-            event_type="authentication_expired",
-            title="Authentication expired",
-            message=f"{payload.name} returned HTTP {result.status_code} during connection testing.",
-            level="error",
-            metadata={
-                "connection_name": payload.name,
-                "base_url": str(payload.base_url),
-                "status_code": result.status_code,
-            },
-        )
-        await session.commit()
+        try:
+            user_id = await resolve_local_user_id(session, user)
+            await create_notification(
+                session,
+                user_id=user_id,
+                event_type="authentication_expired",
+                title="Authentication expired",
+                message=f"{payload.name} returned HTTP {result.status_code} during connection testing.",
+                level="error",
+                metadata={
+                    "connection_name": payload.name,
+                    "base_url": str(payload.base_url),
+                    "status_code": result.status_code,
+                },
+            )
+            await session.commit()
+        except (RuntimeError, SQLAlchemyError):
+            await session.rollback()
     return result
