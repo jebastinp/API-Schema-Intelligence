@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
@@ -28,7 +27,6 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const supabaseConfigured = hasPublicSupabaseEnv();
-  const supabase = supabaseConfigured ? createSupabaseBrowserClient() : null;
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -43,11 +41,13 @@ export function LoginForm() {
     setPending(true);
     setError(null);
 
-    if (!supabase) {
+    if (!supabaseConfigured) {
       setPending(false);
       setError("Sign-in is currently unavailable. Check local configuration and try again.");
       return;
     }
+
+    const supabase = createSupabaseBrowserClient();
 
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: values.email,
@@ -66,12 +66,7 @@ export function LoginForm() {
   });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full"
-    >
+    <div className="w-full">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(180deg,#EEF6FF_0%,#E8F2FF_100%)] text-[#007AFF] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
         <Lock className="h-6 w-6 fill-[#007AFF] stroke-white stroke-[1.8]" />
       </div>
@@ -132,6 +127,6 @@ export function LoginForm() {
           </Link>
         </p>
       </form>
-    </motion.div>
+    </div>
   );
 }
