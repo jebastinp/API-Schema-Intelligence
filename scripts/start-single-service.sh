@@ -23,4 +23,28 @@ cleanup() {
 
 trap cleanup INT TERM EXIT
 
-nginx -g 'daemon off;'
+nginx -g 'daemon off;' &
+NGINX_PID=$!
+
+EXIT_CODE=0
+while true; do
+  if ! kill -0 "${BACKEND_PID}" 2>/dev/null; then
+    wait "${BACKEND_PID}" || EXIT_CODE=$?
+    break
+  fi
+
+  if ! kill -0 "${FRONTEND_PID}" 2>/dev/null; then
+    wait "${FRONTEND_PID}" || EXIT_CODE=$?
+    break
+  fi
+
+  if ! kill -0 "${NGINX_PID}" 2>/dev/null; then
+    wait "${NGINX_PID}" || EXIT_CODE=$?
+    break
+  fi
+
+  sleep 1
+done
+
+cleanup
+exit "${EXIT_CODE}"

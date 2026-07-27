@@ -22,7 +22,7 @@ ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="/opt/venv/bin:/usr/local/bin:${PATH}"
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends nginx gettext-base ca-certificates \
+  && apt-get install -y --no-install-recommends nginx gettext-base ca-certificates nodejs \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -38,7 +38,6 @@ RUN python -m venv "${VIRTUAL_ENV}" \
   && "${VIRTUAL_ENV}/bin/pip" install --upgrade pip \
   && "${VIRTUAL_ENV}/bin/pip" install -e ./backend
 
-COPY --from=frontend-builder /usr/local/bin/node /usr/local/bin/node
 COPY --from=frontend-builder /app/frontend/.next /app/frontend/.next
 COPY --from=frontend-builder /app/frontend/node_modules /app/frontend/node_modules
 COPY --from=frontend-builder /app/frontend/package.json /app/frontend/package.json
