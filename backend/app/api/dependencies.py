@@ -1,16 +1,10 @@
-from fastapi import Depends, Header, HTTPException, status
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.db.session import get_db
-from app.repositories.user import UserRepository
+from fastapi import Header, HTTPException, status
 from app.schemas.auth import CurrentUser
 from app.services.auth import AuthError, current_user_from_token
 
 
 async def get_current_user(
     authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_db),
 ) -> CurrentUser:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
@@ -27,17 +21,5 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(exc),
         ) from exc
-
-    repository = UserRepository(session)
-    try:
-        await repository.upsert_from_supabase_claims(
-            supabase_user_id=user.supabase_user_id,
-            email=user.email,
-            full_name=user.full_name,
-        )
-        await session.commit()
-    except SQLAlchemyError as exc:
-        await session.rollback()
-        raise RuntimeError("Supabase health check failed: database session is unavailable.") from exc
 
     return user
