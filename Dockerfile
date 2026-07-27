@@ -42,8 +42,7 @@ COPY --from=frontend-builder /app/frontend/.next/standalone/ /app/frontend/
 COPY --from=frontend-builder /app/frontend/.next/static /app/frontend/.next/static
 
 RUN mkdir -p /app/frontend/frontend/.next \
-  && cp -R /app/frontend/.next/static /app/frontend/frontend/.next/static \
-  && cp -R /app/frontend/public /app/frontend/frontend/public
+  && cp -R /app/frontend/.next/static /app/frontend/frontend/.next/static
 
 EXPOSE 8080
 
