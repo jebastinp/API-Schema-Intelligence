@@ -546,3 +546,442 @@ Export Agent
 This captures the requirements you’ve described: cursor-based scanning of every employee across all pages, recursive schema discovery, naming rules, SQL/XQuery generation, comparison, reporting, and resume support. It should give Claude a solid specification to work from.
 
 
+
+Here's a **master prompt** you can give to Codex to build a **professional desktop application using only Python built-in packages (pure Tkinter)**.
+
+---
+
+# Build a Modern Enterprise Desktop UI Using Pure Tkinter
+
+Build a **professional enterprise desktop application** named **Schema Studio – API Schema Intelligence**.
+
+## Technology Restrictions (VERY IMPORTANT)
+
+Use **ONLY Python built-in libraries**.
+
+Allowed:
+
+* tkinter
+* tkinter.ttk
+* tkinter.font
+* tkinter.messagebox
+* tkinter.filedialog
+* tkinter.scrolledtext
+* tkinter.colorchooser
+* threading
+* queue
+* json
+* pathlib
+* sqlite3
+* datetime
+* os
+* sys
+* time
+
+DO NOT USE
+
+* CustomTkinter
+* ttkbootstrap
+* Pillow (PIL)
+* OpenCV
+* PyQt
+* PySide
+* Kivy
+* wxPython
+* Any pip package
+* Any external dependency
+
+The application must run on a fresh Python installation.
+
+---
+
+# UI Goal
+
+Make the UI look like a modern enterprise desktop application.
+
+Think of
+
+* Visual Studio
+* Azure Data Studio
+* Azure Portal
+* JetBrains IDE
+* Microsoft Power BI Desktop
+* Databricks Desktop
+* Microsoft Office
+
+Do NOT make it look like a typical old Tkinter application.
+
+---
+
+# Window
+
+Size
+
+1920×1080
+
+Resizable
+
+Minimum
+
+1400×850
+
+Centered
+
+Native Windows title bar
+
+---
+
+# Theme
+
+Professional White
+
+Background
+
+#F6F8FC
+
+Cards
+
+White
+
+Borders
+
+#E5E7EB
+
+Primary
+
+#2563EB
+
+Hover
+
+#1D4ED8
+
+Text
+
+#111827
+
+Secondary
+
+#6B7280
+
+Rounded looking controls using Canvas where necessary.
+
+---
+
+# Sidebar
+
+Fixed width
+
+280 px
+
+Contains
+
+Logo
+
+Overview
+
+Discover & Scan
+
+• API Connections
+
+• Live Scanner
+
+• Scan History
+
+• Schema Explorer
+
+Analyze
+
+• Schema Compare
+
+• Version History
+
+• Field Intelligence
+
+Generate
+
+• SQL Generator
+
+• XQuery Generator
+
+Manage
+
+• Exports
+
+• Notifications
+
+• Settings
+
+Sign Out
+
+Use ttk buttons styled professionally.
+
+Hover effects.
+
+Selected item blue.
+
+No scrolling.
+
+Always visible.
+
+---
+
+# Top Bar
+
+Contains
+
+Page Title
+
+Subtitle
+
+Search box
+
+Notification icon
+
+User avatar
+
+User name
+
+Role
+
+Primary blue button
+
+"Add API Connection"
+
+Professional spacing.
+
+---
+
+# Dashboard
+
+Top KPI cards
+
+Connected APIs
+
+Running Scans
+
+Columns
+
+Schema Versions
+
+Schema Changes
+
+Generated SQL
+
+Each card
+
+White
+
+Shadow simulation
+
+Large number
+
+Subtitle
+
+Icon
+
+Hover effect
+
+---
+
+# Main Content
+
+Live Scanner
+
+Treeview
+
+Progress bars
+
+Status badges
+
+Buttons
+
+Recent Activity
+
+Scrollable list
+
+Schema Changes
+
+Canvas chart
+
+Top Schema Changes
+
+Treeview
+
+Everything aligned perfectly.
+
+---
+
+# Fonts
+
+Segoe UI
+
+Headers
+
+18-22
+
+Cards
+
+13-15
+
+Body
+
+11
+
+Small
+
+10
+
+Bold only where necessary.
+
+---
+
+# Layout Rules
+
+No widget overlaps.
+
+No clipping.
+
+No horizontal scrolling.
+
+No vertical scrolling.
+
+Entire dashboard must fit on a 1920×1080 screen.
+
+Proper margins.
+
+Consistent spacing.
+
+Professional alignment.
+
+---
+
+# Performance
+
+Create UI instantly.
+
+Do NOT freeze.
+
+Lazy load heavy pages.
+
+Reuse widgets.
+
+Do NOT recreate entire screens.
+
+Switch pages in under 100 ms.
+
+---
+
+# Architecture
+
+Use classes.
+
+Example
+
+App
+
+Sidebar
+
+Header
+
+DashboardPage
+
+APIConnectionsPage
+
+SchemaExplorerPage
+
+SchemaComparePage
+
+SQLGeneratorPage
+
+SettingsPage
+
+Use Frame swapping.
+
+Keep every page independent.
+
+---
+
+# Styling
+
+Create one centralized style manager.
+
+Do NOT hardcode colors everywhere.
+
+Keep constants.
+
+Reusable widgets.
+
+---
+
+# Canvas
+
+Use Canvas to simulate
+
+Cards
+
+Rounded panels
+
+Charts
+
+Progress
+
+Badges
+
+Modern UI effects
+
+---
+
+# Treeview
+
+Professional headers.
+
+Alternating row colors.
+
+Hover highlight.
+
+Sortable columns.
+
+Column resizing.
+
+---
+
+# Responsiveness
+
+Resize correctly.
+
+Maintain proportions.
+
+No broken layouts.
+
+No blank areas.
+
+No clipping.
+
+---
+
+# Code Quality
+
+PEP-8.
+
+Type hints.
+
+Docstrings.
+
+Modular.
+
+Maintainable.
+
+No duplicated code.
+
+---
+
+# Final Goal
+
+The finished application should make people think:
+
+> **"I can't believe this was built using only the Python standard library."**
+
+The UI should feel polished, enterprise-grade, responsive, and production-ready while using **100% pure Tkinter and built-in Python libraries only**.
+
+
+
