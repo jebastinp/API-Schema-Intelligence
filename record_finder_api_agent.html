@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RECORD FINDER API AGENT</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Segoe UI, Arial, sans-serif;
+    background: #f2f4f7;
+    margin: 0;
+    padding: 0;
+    color: #1a1a1a;
+  }
+  header {
+    background: #003478;
+    color: white;
+    padding: 16px 24px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #cfe0ff;
+  }
+  .container {
+    max-width: 1150px;
+    margin: 20px auto;
+    padding: 0 16px 40px;
+  }
+  .card {
+    background: white;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 12px;
+    color: #003478;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 10px 14px;
+    align-items: center;
+  }
+  label { font-size: 13px; font-weight: 600; color: #333; }
+  input[type="text"], input[type="password"], input[type="number"] {
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid #c7ccd4;
+    border-radius: 5px;
+    font-size: 13px;
+  }
+  .row-inline { display: flex; align-items: center; gap: 8px; }
+  .checkbox-row { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .note {
+    font-size: 12px;
+    color: #7a5b00;
+    background: #fff7e0;
+    border: 1px solid #ffe8a3;
+    padding: 8px 10px;
+    border-radius: 5px;
+    margin-top: 6px;
+  }
+  .btn-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #saveBtn { background: #6c757d; color: white; }
+  #saveBtn:hover { background: #5a6268; }
+  #loadBtn { background: #9aa5b1; color: white; }
+  #loadBtn:hover { background: #7f8a97; }
+  #fetchBtn { background: #003478; color: white; }
+  #fetchBtn:hover:not(:disabled) { background: #00265a; }
+  #stopBtn { background: #c0392b; color: white; }
+  #stopBtn:hover:not(:disabled) { background: #992d22; }
+  #exportCsvBtn, #exportJsonBtn { background: #1e824c; color: white; }
+  #exportCsvBtn:hover:not(:disabled), #exportJsonBtn:hover:not(:disabled) { background: #166238; }
+  button:disabled { background: #d3d7dc !important; color: #888 !important; cursor: not-allowed; }
+  #statusText { font-size: 13px; color: #333; margin-left: 6px; font-weight: 600; }
+  #log {
+    background: #0e1621;
+    color: #d7e6ff;
+    font-family: Consolas, monospace;
+    font-size: 12.5px;
+    padding: 10px;
+    height: 180px;
+    overflow-y: auto;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .log-error { color: #ff6b6b; }
+  .log-warn { color: #ffd166; }
+  .log-ok { color: #7ee787; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12.5px;
+  }
+  th, td {
+    border: 1px solid #dde3ea;
+    padding: 6px 8px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  th { background: #eef2f8; color: #003478; position: sticky; top: 0; }
+  .table-wrap { max-height: 300px; overflow: auto; border: 1px solid #dde3ea; border-radius: 6px; }
+  .savedTag { font-size: 11px; color: #1e824c; margin-left: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔎 RECORD FINDER API AGENT</h1>
+  <p>Browser-based OAuth + paginated record lookup tool — pure HTML/CSS/JS, no downloads, no packages.</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Connection Settings</h2>
+    <div class="grid">
+      <label>API Endpoint:</label>
+      <input type="text" id="apiEndpoint" placeholder="https://api.example.com/records">
+
+      <label>Token URL:</label>
+      <input type="text" id="tokenUrl" placeholder="https://auth.example.com/oauth/token">
+
+      <label>Client ID:</label>
+      <input type="text" id="clientId">
+
+      <label>Client Secret:</label>
+      <div class="row-inline">
+        <input type="password" id="clientSecret" style="flex:1">
+        <label class="checkbox-row"><input type="checkbox" id="showSecret"> show</label>
+      </div>
+
+      <label>Token Scope (optional):</label>
+      <input type="text" id="scope" placeholder="e.g. api.read (leave blank if not required)">
+
+      <label>Subscription / API Key header (optional):</label>
+      <div class="row-inline">
+        <input type="text" id="apiKeyHeaderName" placeholder="Header name, e.g. Ocp-Apim-Subscription-Key" style="flex:1">
+        <input type="text" id="apiKeyHeaderValue" placeholder="Header value / key" style="flex:1">
+      </div>
+
+      <label>Target Record ID:</label>
+      <input type="text" id="targetRecordId">
+
+      <label>Cursor param name:</label>
+      <input type="text" id="cursorParam" value="cursor">
+
+      <label>Page size (count):</label>
+      <input type="number" id="count" value="10000">
+    </div>
+    <div class="note">
+      ⚠️ Browser note: JS <code>fetch()</code> cannot use a corporate proxy setting like Python's <code>urllib</code> did —
+      proxying is handled by your OS/browser network config. Also, the API and token server must return
+      CORS headers allowing this page's origin, or the browser will block the response even if the server replies successfully.
+      If you get a 403, check the Log panel below — it now prints the full response body from the server.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Actions</h2>
+    <div class="btn-bar">
+      <button id="saveBtn">💾 Save Settings</button>
+      <button id="loadBtn">📂 Load Settings</button>
+      <span id="savedTag" class="savedTag"></span>
+      <span style="width:14px;"></span>
+      <button id="fetchBtn">▶ Fetch Record</button>
+      <button id="stopBtn" disabled>⏹ Stop</button>
+      <button id="exportCsvBtn" disabled>⬇ Export CSV</button>
+      <button id="exportJsonBtn" disabled>⬇ Export Raw JSON</button>
+      <span id="statusText">Ready.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Log</h2>
+    <div id="log"></div>
+  </div>
+
+  <div class="card">
+    <h2>Result (row 1 = field names, row 2 = values)</h2>
+    <div class="table-wrap">
+      <table id="resultTable"><thead><tr><th>No data yet</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let stopFlag = false;
+let lastRecord = null;
+let lastHeaders = [];
+let lastValues = [];
+
+const el = (id) => document.getElementById(id);
+
+function logMsg(msg, cls) {
+  const box = el('log');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  const time = new Date().toLocaleTimeString();
+  line.textContent = `[${time}] ${msg}`;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+// ============================================================
+// SETTINGS SAVE / LOAD  (before Fetch button)
+// ============================================================
+const FIELD_IDS = [
+  'apiEndpoint','tokenUrl','clientId','clientSecret','scope',
+  'apiKeyHeaderName','apiKeyHeaderValue','targetRecordId','cursorParam','count'
+];
+const STORAGE_KEY = 'recordFinderAgentSettings';
+
+function saveSettings() {
+  const data = {};
+  FIELD_IDS.forEach(id => data[id] = el(id).value);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    el('savedTag').textContent = 'Saved ✓ ' + new Date().toLocaleTimeString();
+    logMsg('Settings saved to browser local storage.', 'log-ok');
+  } catch (e) {
+    logMsg('Could not save settings: ' + e.message, 'log-error');
+  }
+}
+
+function loadSettings() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    logMsg('No saved settings found.', 'log-warn');
+    return;
+  }
+  try {
+    const data = JSON.parse(raw);
+    FIELD_IDS.forEach(id => { if (data[id] !== undefined) el(id).value = data[id]; });
+    el('savedTag').textContent = 'Loaded ✓';
+    logMsg('Settings loaded from browser local storage.', 'log-ok');
+  } catch (e) {
+    logMsg('Could not load settings: ' + e.message, 'log-error');
+  }
+}
+
+el('saveBtn').addEventListener('click', saveSettings);
+el('loadBtn').addEventListener('click', loadSettings);
+el('showSecret').addEventListener('change', () => {
+  el('clientSecret').type = el('showSecret').checked ? 'text' : 'password';
+});
+
+// auto-load on page open, if present
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem(STORAGE_KEY)) loadSettings();
+});
+
+// ============================================================
+// NETWORKING HELPERS
+// ============================================================
+
+async function readBodySafe(resp) {
+  try {
+    const text = await resp.text();
+    try { return JSON.stringify(JSON.parse(text)); } catch (_) { return text; }
+  } catch (_) {
+    return '(no body)';
+  }
+}
+
+async function getToken(tokenUrl, clientId, clientSecret, scope) {
+  const body = new URLSearchParams();
+  body.set('grant_type', 'client_credentials');
+  body.set('client_id', clientId);
+  body.set('client_secret', clientSecret);
+  if (scope) body.set('scope', scope);
+
+  let resp;
+  try {
+    resp = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    });
+  } catch (netErr) {
+    throw new Error(
+      'Network/DNS/CORS failure while requesting token: ' + netErr.message +
+      '\n  -> Check the Token URL is correct, reachable (VPN/proxy), and that the server allows CORS for this page.'
+    );
+  }
+
+  if (!resp.ok) {
+    const bodyText = await readBodySafe(resp);
+    throw new Error(`Token request failed: HTTP ${resp.status} ${resp.statusText}\nResponse body: ${bodyText}`);
+  }
+
+  const data = await resp.json();
+  if (!data.access_token) {
+    throw new Error('Token response did not contain access_token. Raw response: ' + JSON.stringify(data));
+  }
+  return data.access_token;
+}
+
+async function getJson(url, params, headers) {
+  const u = new URL(url);
+  Object.entries(params || {}).forEach(([k, v]) => u.searchParams.set(k, v));
+
+  let resp;
+  try {
+    resp = await fetch(u.toString(), { method: 'GET', headers: headers || {} });
+  } catch (netErr) {
+    throw new Error(
+      'Network/DNS/CORS failure while calling API: ' + netErr.message +
+      '\n  -> Check the API Endpoint URL, VPN/proxy connectivity, and CORS headers on the server.'
+    );
+  }
+
+  if (!resp.ok) {
+    const bodyText = await readBodySafe(resp);
+    let hint = '';
+    if (resp.status === 403) {
+      hint = '\nHint for 403 Forbidden: token may lack required scope, a Subscription/API key header may be missing, ' +
+             'or your IP/app is not authorized for this endpoint. Check the response body above for the exact reason.';
+    } else if (resp.status === 401) {
+      hint = '\nHint for 401: token missing/expired/invalid.';
+    } else if (resp.status === 404) {
+      hint = '\nHint for 404: endpoint path may be wrong.';
+    }
+    throw new Error(`API request failed: HTTP ${resp.status} ${resp.statusText}\nResponse body: ${bodyText}${hint}`);
+  }
+
+  return resp.json();
+}
+
+// ============================================================
+// FIND RECORD (paginated scan)
+// ============================================================
+async function findRecord(cfg) {
+  logMsg('Requesting access token...');
+  const token = await getToken(cfg.tokenUrl, cfg.clientId, cfg.clientSecret, cfg.scope);
+  logMsg('Token acquired.', 'log-ok');
+
+  const headers = {
+    'Authorization': 'Bearer ' + token,
+    'Accept': 'application/json'
+  };
+  if (cfg.apiKeyHeaderName && cfg.apiKeyHeaderValue) {
+    headers[cfg.apiKeyHeaderName] = cfg.apiKeyHeaderValue;
+  }
+
+  let cursor = null;
+  let page = 1;
+  let scanned = 0;
+
+  while (true) {
+    if (stopFlag) {
+      logMsg('Stopped by user.', 'log-warn');
+      return null;
+    }
+
+    const params = { count: cfg.count };
+    if (cursor) params[cfg.cursorParam] = cursor;
+
+    const data = await getJson(cfg.apiEndpoint, params, headers);
+    const records = data.updateSequence || [];
+    logMsg(`Scanning page ${page} (${records.length} records)...`);
+
+    if (records.length === 0) {
+      logMsg('No more records found.');
+      break;
+    }
+
+    for (const record of records) {
+      scanned++;
+      if (String(record.recordId) === String(cfg.targetRecordId)) {
+        logMsg(`Record FOUND on page ${page} (scanned ${scanned} records).`, 'log-ok');
+        return record;
+      }
+    }
+
+    cursor = data.nextCursor;
+    if (!cursor) {
+      logMsg('No nextCursor found. Stopping.');
+      break;
+    }
+    page++;
+  }
+
+  logMsg(`Record NOT found. Total scanned: ${scanned}.`, 'log-warn');
+  return null;
+}
+
+// ============================================================
+// FLATTEN + SHORTEST-UNIQUE-KEY SIMPLIFICATION
+// ============================================================
+function flattenRecord(obj) {
+  const flat = [];
+  function walk(o, parts) {
+    if (o !== null && typeof o === 'object' && !Array.isArray(o)) {
+      const keys = Object.keys(o);
+      if (keys.length === 0) { flat.push([parts, {}]); return; }
+      keys.forEach(k => walk(o[k], parts.concat([k])));
+    } else if (Array.isArray(o)) {
+      if (o.length === 0) { flat.push([parts, []]); return; }
+      o.forEach(item => walk(item, parts)); // index dropped intentionally
+    } else {
+      flat.push([parts, o]);
+    }
+  }
+  walk(obj, []);
+  return flat;
+}
+
+function shortestUniqueKeys(flatItems) {
+  const n = flatItems.length;
+  if (n === 0) return [];
+
+  const maxLen = Math.max(...flatItems.map(([p]) => p.length));
+  const assigned = new Array(n).fill(null);
+  let remaining = [...Array(n).keys()];
+  let k = 1;
+
+  while (remaining.length > 0 && k <= maxLen) {
+    const buckets = {};
+    for (const i of remaining) {
+      const parts = flatItems[i][0];
+      const suffix = parts.length >= k ? parts.slice(parts.length - k) : parts.slice();
+      const candidate = suffix.length ? suffix.join('.') : `field_${i}`;
+      (buckets[candidate] = buckets[candidate] || []).push(i);
+    }
+
+    const stillRemaining = [];
+    for (const candidate in buckets) {
+      const idxs = buckets[candidate];
+      const parts0 = flatItems[idxs[0]][0];
+      const atFullLength = parts0.length <= k;
+      if (idxs.length === 1) {
+        assigned[idxs[0]] = candidate;
+      } else if (atFullLength) {
+        idxs.forEach((i, order) => {
+          assigned[i] = order === 0 ? candidate : `${candidate}_${order + 1}`;
+        });
+      } else {
+        stillRemaining.push(...idxs);
+      }
+    }
+    remaining = stillRemaining;
+    k++;
+  }
+
+  for (const i of remaining) {
+    const parts = flatItems[i][0];
+    assigned[i] = parts.length ? parts.join('.') : `field_${i}`;
+  }
+
+  const result = [];
+  const seen = {};
+  flatItems.forEach(([parts, value], i) => {
+    let key = assigned[i];
+    if (seen[key] !== undefined) {
+      seen[key]++;
+      key = `${key}_${seen[key]}`;
+    } else {
+      seen[key] = 1;
+    }
+    result.push([key, value]);
+  });
+  return result;
+}
+
+function recordToTable(record) {
+  const flat = flattenRecord(record);
+  const simplified = shortestUniqueKeys(flat);
+  const headers = simplified.map(([k]) => k);
+  const values = simplified.map(([, v]) => (v === null || v === undefined ? '' : String(v)));
+  return { headers, values };
+}
+
+// ============================================================
+// UI WIRING
+// ============================================================
+function fillTable(headers, values) {
+  const table = el('resultTable');
+  const thead = table.querySelector('thead');
+  const tbody = table.querySelector('tbody');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  const trH = document.createElement('tr');
+  headers.forEach(h => {
+    const th = document.createElement('th');
+    th.textContent = h;
+    trH.appendChild(th);
+  });
+  thead.appendChild(trH);
+
+  const trV = document.createElement('tr');
+  values.forEach(v => {
+    const td = document.createElement('td');
+    td.textContent = v;
+    trV.appendChild(td);
+  });
+  tbody.appendChild(trV);
+}
+
+function collectCfg() {
+  const required = ['apiEndpoint', 'tokenUrl', 'clientId', 'clientSecret', 'targetRecordId'];
+  const missing = required.filter(id => !el(id).value.trim());
+  if (missing.length) {
+    alert('Please fill in: ' + missing.join(', '));
+    return null;
+  }
+  for (const urlField of ['apiEndpoint', 'tokenUrl']) {
+    const v = el(urlField).value.trim();
+    if (!/^https?:\/\//i.test(v)) {
+      alert(`"${urlField}" must start with http:// or https://`);
+      return null;
+    }
+  }
+  const count = parseInt(el('count').value.trim() || '10000', 10);
+  if (isNaN(count)) {
+    alert('Page size (count) must be a number.');
+    return null;
+  }
+  return {
+    apiEndpoint: el('apiEndpoint').value.trim(),
+    tokenUrl: el('tokenUrl').value.trim(),
+    clientId: el('clientId').value.trim(),
+    clientSecret: el('clientSecret').value.trim(),
+    scope: el('scope').value.trim(),
+    apiKeyHeaderName: el('apiKeyHeaderName').value.trim(),
+    apiKeyHeaderValue: el('apiKeyHeaderValue').value.trim(),
+    targetRecordId: el('targetRecordId').value.trim(),
+    cursorParam: el('cursorParam').value.trim() || 'cursor',
+    count: count
+  };
+}
+
+el('fetchBtn').addEventListener('click', async () => {
+  const cfg = collectCfg();
+  if (!cfg) return;
+
+  stopFlag = false;
+  el('fetchBtn').disabled = true;
+  el('stopBtn').disabled = false;
+  el('exportCsvBtn').disabled = true;
+  el('exportJsonBtn').disabled = true;
+  el('statusText').textContent = 'Working...';
+  el('log').innerHTML = '';
+  el('resultTable').querySelector('thead').innerHTML = '<tr><th>Working...</th></tr>';
+  el('resultTable').querySelector('tbody').innerHTML = '';
+
+  try {
+    const record = await findRecord(cfg);
+    if (record) {
+      lastRecord = record;
+      const { headers, values } = recordToTable(record);
+      lastHeaders = headers;
+      lastValues = values;
+      fillTable(headers, values);
+      el('exportCsvBtn').disabled = false;
+      el('exportJsonBtn').disabled = false;
+      el('statusText').textContent = `Done. ${headers.length} fields.`;
+    } else {
+      lastRecord = null;
+      el('statusText').textContent = 'Record not found.';
+    }
+  } catch (err) {
+    logMsg(String(err.message || err), 'log-error');
+    el('statusText').textContent = 'Error — see log.';
+  } finally {
+    el('fetchBtn').disabled = false;
+    el('stopBtn').disabled = true;
+  }
+});
+
+el('stopBtn').addEventListener('click', () => {
+  stopFlag = true;
+  el('statusText').textContent = 'Stopping...';
+});
+
+function downloadBlob(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function csvEscape(v) {
+  if (/[",\n]/.test(v)) return '"' + v.replace(/"/g, '""') + '"';
+  return v;
+}
+
+el('exportCsvBtn').addEventListener('click', () => {
+  if (!lastHeaders.length) return;
+  const line1 = lastHeaders.map(csvEscape).join(',');
+  const line2 = lastValues.map(csvEscape).join(',');
+  downloadBlob('record_values.csv', line1 + '\r\n' + line2 + '\r\n', 'text/csv');
+});
+
+el('exportJsonBtn').addEventListener('click', () => {
+  if (!lastRecord) return;
+  downloadBlob('matched_record.json', JSON.stringify(lastRecord, null, 4), 'application/json');
+});
+</script>
+
+</body>
+</html>
